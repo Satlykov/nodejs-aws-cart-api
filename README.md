@@ -60,6 +60,48 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Deploy
+
+Deployment is done using AWS CDK. You can find deployment configuration in `./deploy` folder.
+
+To run deployment, you need to have AWS credentials set up on your machine.
+
+Run deployment if you have AWS credentials in your environment variables:
+
+```bash
+$ npm run build
+$ npm run deploy
+```
+
+If you set up AWS Profile in your `~/.aws/credentials` file, you can run deployment with the following command:
+
+```bash
+$ npm run build
+$ npm run deploy -- --profile <profile-name>
+```
+
+When deployment is done, you can find the url of deployed API in the output of the command.
+
+```
+Outputs:
+nodejs-aws-cart-api.Url = <url>
+```
+
+#### How it works
+
+When you run `npm run deploy`, cdk bundles all your code into a single js file using `esbuild`, uploads it to S3, generates CloudFormation template representing the change and deploying it to the AWS account.
+
+### Notes
+
+Due to how NestJS is written, some modules are marked as "external" and are not included in the final bundle:
+
+- @nestjs/microservices
+- @nestjs/websockets
+- class-transformer
+- class-validator
+
+If you want to use any of this modules, you need to add them to package.json, install and remove from `deploy/Stack.ts`.
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
