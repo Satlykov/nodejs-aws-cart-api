@@ -1,4 +1,4 @@
-# setup stage
+# Setup stage
 FROM node:20-alpine AS setup
 
 WORKDIR /usr/src/app
@@ -7,24 +7,26 @@ COPY package*.json ./
 
 RUN npm ci && npm cache clean --force
 
-# build stage
-
-FROM node:20-alpine AS build
+# Build stage
+FROM setup AS build
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY . .
 
 RUN npm run build
 
-# deploy stage
+# Production stage
+FROM alpine as production
 
-FROM node:20-alpine AS deploy
+RUN apk add --update nodejs
 
-WORKDIR /usr/src/app
+ENV NODE_ENV production
 
-COPY --from=build /usr/src/app/dist .
+COPY --from=build /usr/src/app/node_modules ./node_modules
+
+COPY --from=build /usr/src/app/dist ./dist
 
 EXPOSE 4000
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/main"]
