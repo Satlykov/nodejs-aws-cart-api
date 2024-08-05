@@ -1,5 +1,6 @@
 # compiled output
 /dist
+/cdk.out
 /node_modules
 
 # Logs
@@ -40,3 +41,6 @@ lerna-debug.log*
 # AWS CDK
 cdk.context.json
 cdk.out
+
+# ENV
+.env
